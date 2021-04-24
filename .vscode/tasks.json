@@ -1,0 +1,62 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "command": "cmake .. && make",
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Rebuild",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": [
+        "Clean",
+        "Build"
+      ],
+      "dependsOrder": "sequence",
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Clean",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "command": "rm -rf *",
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    }
+  ]
+}
