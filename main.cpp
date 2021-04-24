@@ -13,6 +13,46 @@ void esc_key_callback(GLFWwindow *window, int key, int scancode, int action, int
     glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
+void interpolate_colors(GLclampf& r, GLclampf& g, GLclampf& b){
+  //it's kind we walk around color interpolated triangle
+  //all distance == 300
+  //step == 1
+
+  const int all_distance = 300;
+  const int edge_distance = all_distance/3;
+  static int curr_pos = -1;
+  if(curr_pos++ >= all_distance -1){
+    curr_pos = 0;
+  }
+
+  GLclampf left_border_r = 0.0f;
+  GLclampf left_border_g = 0.0f;
+  GLclampf left_border_b = 0.0f;
+  GLclampf right_border_r = 0.0f;
+  GLclampf right_border_g = 0.0f;
+  GLclampf right_border_b = 0.0f;
+  
+  if(curr_pos < edge_distance){
+    left_border_r = 1.0f;
+    right_border_g = 1.0f;
+  }
+  else if(curr_pos < edge_distance*2){
+    left_border_g = 1.0f;
+    right_border_b = 1.0f;
+  }
+  else {
+    left_border_b = 1.0f;
+    right_border_r = 1.0f;
+  }
+
+  int edge_position = curr_pos % edge_distance;
+
+  float coeff = 1 - (float)edge_position / edge_distance;
+  r = coeff * left_border_r + (1 - coeff) * right_border_r;
+  g = coeff * left_border_g + (1 - coeff) * right_border_g;
+  b = coeff * left_border_b + (1 - coeff) * right_border_b;
+}
+
 int main()
 {
   //Init GLFW
@@ -50,9 +90,9 @@ int main()
 
   glViewport(0, 0, width, height);
 
-  GLclampf red = 0.2f;
-  GLclampf green = 0.3f;
-  GLclampf blue = 0.4f;
+  GLclampf red = 0.0f;
+  GLclampf green = 0.0f;
+  GLclampf blue = 0.0f;
 
   while (!glfwWindowShouldClose(window))
   {
@@ -60,6 +100,7 @@ int main()
     glfwPollEvents();
 
     //draw commands
+    interpolate_colors(red, green, blue);
     glClearColor(red, green, blue, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
