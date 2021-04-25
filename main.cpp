@@ -154,9 +154,21 @@ int main()
 
   // Set up vertex data (and buffer(s)) and attribute pointers
   GLfloat vertices[] = {
-      -0.5f, -0.5f, 0.0f, // Left
-      0.5f, -0.5f, 0.0f,  // Right
-      0.0f, 0.5f, 0.0f    // Top
+      -0.9f, -0.5f, 0.0f, // Left
+      -0.3f, -0.5f, 0.0f,  // Right
+      -0.3f, 0.5f, 0.0f    // Top
+  };
+
+  GLfloat vertices2[] = {
+      0.9f, 0.9f, 0.0f,   // Верхний правый угол
+      0.9f, -0.9f, 0.0f,  // Нижний правый угол
+      0.5f, -0.9f, 0.0f, // Нижний левый угол
+      0.5f, 0.9f, 0.0f   // Верхний левый угол
+  };
+  GLuint indices[] = {
+      // Помните, что мы начинаем с 0!
+      0, 1, 3, // Первый треугольник
+      1, 2, 3  // Второй треугольник
   };
   GLuint VBO, VAO;
   glGenVertexArrays(1, &VAO);
@@ -174,10 +186,32 @@ int main()
 
   glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)
 
+  GLuint EBO;
+  glGenBuffers(1, &EBO);
+  GLuint VBO2, VAO2;
+  glGenVertexArrays(1, &VAO2);
+  glGenBuffers(1, &VBO2);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  // 1. Привязываем VAO
+  glBindVertexArray(VAO2);
+  // 2. Копируем наши вершины в буфер для OpenGL
+  glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+  // 3. Копируем наши индексы в в буфер для OpenGL
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  // 3. Устанавливаем указатели на вершинные атрибуты
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+  glEnableVertexAttribArray(0);
+  // 4. Отвязываем VAO (НЕ EBO)
+  glBindVertexArray(0);
+
+
   GLclampf red = 0.0f;
   GLclampf green = 0.0f;
   GLclampf blue = 0.0f;
-
 
   while (!glfwWindowShouldClose(window))
   {
@@ -193,7 +227,10 @@ int main()
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(VAO2);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
 
     //swap buffers
     glfwSwapBuffers(window);
